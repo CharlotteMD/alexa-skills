@@ -1,8 +1,8 @@
 'use strict';
 
-var http = require('http');
+var https = require('https');
 
-exports.handler = function(event, context) {
+exports.handler = function (event, context) {
 
     try {
 
@@ -12,7 +12,6 @@ exports.handler = function(event, context) {
 
             let options = {};
 
-            // options.speechText += getWish();
             options.speechText = "Hello. I can help you choose your outfit, based on the weather. Let's get started. Ask me, what shall I wear today?";
             options.repromptText = "Let me help you choose what to wear today.  Ask me, what shall I wear today?";
             options.endSession = false;
@@ -25,71 +24,55 @@ exports.handler = function(event, context) {
 
             if (request.intent.name === "HelloIntent") {
 
-                options.speechText = "Working. Get the weather. ";
+                // options.speechText = "Working. Get the weather. ";
 
-                // getWeather(function(forecast, err) {
-                //     if(err) {
-                //         context.fail(err);
-                //     } else { 
-                //         options.speechText += forecast;
-                //         options.endSession = true;
-                //         context.succeed(buildResponse(options));
-                //     }
-                // });
+
+                getWeather(function (forecast, err) {
+                    if (err) {
+                        context.fail(err);
+                    } else {
+                        options.speechText += forecast;
+                        options.endSession = true;
+                        context.succeed(buildResponse(options));
+                    }
+                });
+
+                context.succeed(buildResponse(options));
 
             } else {
-                throw("Unknown intent")
+                throw ("Unknown intent")
             }
-        
+
         } else if (request.type === "SessionEndedRequest") {
 
         } else {
-            throw("Unknown intent type");
+            throw ("Unknown intent type");
         }
-    } catch(e) {
-        context.fail("Exception: " +e);
+    } catch (e) {
+        context.fail("Exception: " + e);
     }
 }
 
-// function getWeather() {
-    
-//     var url = 'https://api.darksky.net/forecast/63c7e1fe04debd05e2a196e39bc9e9c4/51.4570,0.2288?units=uk2';
-//     var req = http.get(url, function(res) {
+function getWeather(callback) {
 
-//         var body = "";
+    https.get("https://api.darksky.net/forecast/63c7e1fe04debd05e2a196e39bc9e9c4/51.4570,0.2288?units=uk2", (res) => {
 
-//         res.on('data', function(chunk) {
-//             body += chunk;
-//         });
+        res.on('data', (chunk) => {
+            var forecast = process.stdout.write(chunk);
+            return forecast;
+        });
 
-//         res.on('end', function() {
-//             body = body.replace(/||/g, '');
-//             var forecast = JSON.parse(body);
-//             callback(forecast.data.currently.summary)
-//         });
-//     });
+        // res.on('end', function () {
+        //     body = body.replace(/||/g, '');
+        //     var forecast = JSON.parse(body);
+        //     callback(forecast.data.currently.summary)
+        // });
+    });
 
-//     req.on('error'. function(err) {
-//         callback(err);
-//     });
-// }
-
-// function getWish() {
-//     let myDate = new Date();
-//     let hours = myDate.getHours();
-
-//     if (hours < 0) {
-//         hours = hours + 24;
-//     }
-//     if (hours < 12) {
-//         return "Good Morning.";
-//     } else if (hours < 18) {
-//         return "Good Afternoon.";
-//     } else {
-//         return "Good evening";
-//     }
-// }
-
+    // res.on('error', function (err) {
+    //     callback(err);
+    // });
+}
 
 function buildResponse(options) {
 
@@ -104,7 +87,7 @@ function buildResponse(options) {
         }
     };
 
-    if(options.repromptText) {
+    if (options.repromptText) {
         response.response.reprompt = {
             outputSpeech: {
                 type: "PlainText",
