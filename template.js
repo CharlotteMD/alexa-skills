@@ -23,7 +23,7 @@ exports.handler = function (event, context) {
             let options = {};
 
             if (request.intent.name === "HelloIntent") {
-
+            
 
                 options.speechText = " ";
                 options.speechText += getWish();
@@ -41,7 +41,7 @@ exports.handler = function (event, context) {
             } else {
                 context.fail("Unknown intent");
             }
-
+ 
 
         } else if (request.type === "SessionEndedRequest") {
 
@@ -77,7 +77,7 @@ function getQuote(callback) {
 
 function getWish() {
     var myDate = new Date();
-
+    
     var day = myDate.getDay();
 
     if (day === 'Saturday' || day === 'Sunday') {
