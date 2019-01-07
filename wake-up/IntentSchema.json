@@ -1,0 +1,25 @@
+{
+    "intents": [
+        {
+            "intent" : "HelloIntent",
+            "slots" : [
+                {
+                    "name": "FirstName",
+                    "type": "AMAZON.FirstName"
+                }
+            ]
+        },
+        {
+            "intent" : "QuoteIntent"
+        },
+        {
+            "intent" : "NextQuoteIntent"
+        },
+        {
+            "intent" : "AMAZON.StopIntent"
+        },
+        {
+            "intent" : "AMAZON.CancelIntent"
+        }
+    ]
+}

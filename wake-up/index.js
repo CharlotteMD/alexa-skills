@@ -23,14 +23,21 @@ exports.handler = function (event, context) {
             
                 handleHelloIntent(request, context);
 
-            } else if (request.type === "QuoteIntent") {
+            } else if (request.intent.name === "QuoteIntent") {
                 
                 handleQuoteIntent(request, context, session);
 
-            } else if (request.type === "NextQuoteIntent") {
+            } else if (request.intent.name === "NextQuoteIntent") {
 
                 handleNextQuoteIntent(request, context, session);
+
+            } else if (request.intent.name === "AMAZON.StopIntent" || request.intent.name === "AMAZON.CancelIntent") {
                 
+                context.succeed(buildResponse({
+                    speechText: "Good bye.",
+                    endSession: true
+                }))
+
             } else {
                 context.fail("Unknown intent");
             }
@@ -173,7 +180,7 @@ function handleNextQuoteIntent(request, context, session) {
                 options.speechText = quote;
                 options.speechText += "Are you still in need of more inspiration?";
                 options.repromptText = "If you'd like to hear another quote, say yes.";
-                options.session.attributes.quoteIntent = true;
+                // options.session.attributes.quoteIntent = true;
                 options.endSession = false;
                 context.succeed(buildResponse(options));
             }
@@ -181,6 +188,7 @@ function handleNextQuoteIntent(request, context, session) {
     } else {
         options.speechText = "Wrong invocation of this intent";
         options.endSession = true;
+        context.succeed(buildResponse(options));
     }
     
 }
